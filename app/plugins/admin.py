@@ -34,6 +34,16 @@ UNMUTE_PERMS = ChatPermissions(  # We need all these perms to unmute *properly*
 )
 
 
+@Client.on_message(filters.me & filters.command("all", prefixes="@") & filters.group)
+async def all_mention(_, message: Message):
+    """
+    All mention command.
+    """
+    await message.delete()
+    async for member in _.get_chat_members(message.chat.id):
+        print(member)
+    await Client.send_message("All")
+
 @Client.on_message(filters.me & filters.command("kick", prefixes=".") & filters.group)
 @doc_args(USER_IDENTIFIERS)
 async def kick(_, message: Message):
