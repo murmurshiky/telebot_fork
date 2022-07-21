@@ -40,9 +40,17 @@ async def all_mention(_, message: Message):
     All mention command.
     """
     await message.delete()
-    async for member in _.get_chat_members(message.chat.id):
-        print(member)
-    await Client.send_message("All")
+    cr = await _.get_chat_members(message.chat.id)
+    cr = [i for i in cr if not i.user.is_bot]    
+    s, g = cr, 50
+    for user_batch in [s[d:d+g] for d in range(0, len(s), g)]:
+        pin = ""
+        for user in user_batch:
+            pin += f"[{user.user.first_name if not user.user.username else user.user.username}](tg://user?id={user.user.id}) "
+        if not pin:
+            continue
+        await _.send_message(chat_id=message.chat.id, text = pin, parse_mode='markdown')
+    
 
 @Client.on_message(filters.me & filters.command("kick", prefixes=".") & filters.group)
 @doc_args(USER_IDENTIFIERS)
